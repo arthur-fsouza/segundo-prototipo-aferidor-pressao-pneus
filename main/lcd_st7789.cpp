@@ -5,6 +5,7 @@
 #include "esp_lcd_panel_dev.h"
 #include "esp_timer.h"
 
+#include "driver/gpio.h"
 #include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_panel_st7789.h"
@@ -20,10 +21,20 @@
 #include <cstdio>
 
 LCD_ST7789::LCD_ST7789() {
+    constexpr gpio_config_t backlight_config{
+        .pin_bit_mask = 1ULL << PIN_LCD_BACKLIGHT,
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
+    };
+    ESP_ERROR_CHECK(gpio_config(&backlight_config));
+    ESP_ERROR_CHECK(gpio_set_level(PIN_LCD_BACKLIGHT, 1));
+
     constexpr spi_bus_config_t buscfg{
-        .mosi_io_num = PIN_SDA,
+        .mosi_io_num = PIN_LCD_MOSI,
         .miso_io_num = -1,
-        .sclk_io_num = PIN_SCL,
+        .sclk_io_num = PIN_LCD_SCLK,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
         .data4_io_num = -1,
@@ -33,8 +44,8 @@ LCD_ST7789::LCD_ST7789() {
         .data_io_default_level = false,
         .max_transfer_sz = WIDTH * 40 * sizeof(uint16_t),
         .flags = SPICOMMON_BUSFLAG_MASTER |
-                SPICOMMON_BUSFLAG_MOSI |
-                SPICOMMON_BUSFLAG_SCLK,
+                 SPICOMMON_BUSFLAG_MOSI |
+                 SPICOMMON_BUSFLAG_SCLK,
         .isr_cpu_id = ESP_INTR_CPU_AFFINITY_AUTO,
         .intr_flags = 0,
     };
