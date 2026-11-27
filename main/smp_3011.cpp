@@ -5,6 +5,8 @@
 
 #include "esp_log.h"
 
+#include "driver/i2c_master.h"
+
 SMP_3011::SMP_3011(const i2c_master_bus_handle_t& i2c_bus) {
 	i2c_device_config_t dev_config = {
 		.dev_addr_length = I2C_ADDR_BIT_LEN_7,

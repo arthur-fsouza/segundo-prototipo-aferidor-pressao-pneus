@@ -1,13 +1,19 @@
+/*
+ * Este projeto utiliza o LCD st7789
+ */
+
 #pragma once
 
-#include "esp_lcd_panel_io.h"
-#include "esp_lcd_panel_ops.h"
-#include "lvgl.h"
+#include "esp_lcd_types.h"
+
+#include "misc/lv_area.h"
+#include "misc/lv_color.h"
+#include "misc/lv_types.h"
 
 #include <cstddef>
 #include <cstdint>
 
-class OLED {
+class LCD_ST7789 {
 public:
     enum class ModoRegional {
         LATAM,
@@ -15,7 +21,7 @@ public:
         EURO
     };
 
-    OLED();
+    LCD_ST7789();
 
     void montar_interface();
     void definir_modo(ModoRegional modo);

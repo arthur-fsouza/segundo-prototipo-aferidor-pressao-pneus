@@ -21,8 +21,9 @@ No caso deste projeto, utilizamos a versão *monométrica* ou *gauge*. Isso sign
 
 [*Datasheet do SMP3011*](https://pt.scribd.com/document/627622073/SMP3011%E5%9E%8BI2C-%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE%E6%8C%87%E4%BB%A4%E8%AF%B4%E6%98%8E-V2-English)
 
-**LCD**
-Utilizamos um LCD de 320x170. Nele, mostramos as informações de pressão e temperatura, junto de uma métrica se a pressão está boa ou ruim.
+**LCD ST7789**
+Utilizamos um LCD tipo ST7789 de 320x170. Nele, mostramos as informações de pressão e temperatura, junto de uma métrica se a pressão está boa ou ruim.
+Caso se queira utilizar outro tipo de display, será necessário a utilização de outra biblioteca, já que a que utilizamos (`lcd_st7789.hpp`) é apenas para esse LCD específico.
 
 **Botões**
 Os botões servem para mudar o local. Esse local refere-se a quais medidas serão mostradas:

@@ -1,18 +1,24 @@
-#include "oled.hpp"
+#include "lcd_st7789.hpp"
+
+#include "esp_err.h"
+#include "esp_heap_caps.h"
+#include "esp_lcd_panel_dev.h"
+#include "esp_timer.h"
+
+#include "esp_lcd_panel_io.h"
+#include "esp_lcd_panel_ops.h"
+#include "esp_lcd_panel_st7789.h"
+
+#include "lvgl.h"
+
+#include "pinos.hpp"
+#include "esp_lcd_panel_io.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 
-#include "esp_err.h"
-#include "esp_heap_caps.h"
-#include "esp_timer.h"
-#include "esp_lcd_panel_vendor.h"
-#include "driver/spi_master.h"
-#include "pinos.hpp"
-#include "esp_lcd_panel_io.h"
-
-OLED::OLED() {
+LCD_ST7789::LCD_ST7789() {
     spi_bus_config_t buscfg = {};
     buscfg.sclk_io_num = PIN_SCL;
     buscfg.mosi_io_num = PIN_SDA;
@@ -64,7 +70,7 @@ OLED::OLED() {
     lv_display_set_buffers(disp, buf1, nullptr, BUF_BYTES, LV_DISPLAY_RENDER_MODE_PARTIAL);
 }
 
-void OLED::montar_interface() {
+void LCD_ST7789::montar_interface() {
     lv_obj_t *tela = lv_screen_active();
     lv_obj_set_style_bg_color(tela, lv_color_hex(0x0F141C), 0);
 
@@ -152,17 +158,17 @@ void OLED::montar_interface() {
     atualizar_painel();
 }
 
-void OLED::definir_modo(ModoRegional modo) {
+void LCD_ST7789::definir_modo(ModoRegional modo) {
     modo_atual_ = modo;
 }
 
-void OLED::definir_leituras(float pressao_psi, float temperatura_interna_c, float temperatura_externa_c) {
+void LCD_ST7789::definir_leituras(float pressao_psi, float temperatura_interna_c, float temperatura_externa_c) {
     pressao_ = pressao_psi;
     temp_int_ = temperatura_interna_c;
     temp_ext_ = temperatura_externa_c;
 }
 
-void OLED::atualizar_painel() {
+void LCD_ST7789::atualizar_painel() {
     if (!interface_montada_) {
         return;
     }
@@ -246,25 +252,25 @@ void OLED::atualizar_painel() {
     lv_obj_set_style_text_color(lbl_temp_ext_, cor_por_temperatura(temp_ext_), 0);
 }
 
-bool OLED::notificar_lvgl_pronto(esp_lcd_panel_io_handle_t io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx) {
+bool LCD_ST7789::notificar_lvgl_pronto(esp_lcd_panel_io_handle_t io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx) {
     lv_display_flush_ready(static_cast<lv_display_t *>(user_ctx));
     return false;
 }
 
-void OLED::enviar_pixels_lvgl(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map) {
+void LCD_ST7789::enviar_pixels_lvgl(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map) {
     int w = area->x2 - area->x1 + 1;
     int h = area->y2 - area->y1 + 1;
     lv_draw_sw_rgb565_swap(px_map, w * h);
-    auto *oled = static_cast<OLED *>(lv_display_get_user_data(disp));
-    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(oled->panel_handle_, area->x1, area->y1,
+    auto *lcd = static_cast<LCD_ST7789 *>(lv_display_get_user_data(disp));
+    ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(lcd->panel_handle_, area->x1, area->y1,
                                               area->x2 + 1, area->y2 + 1, px_map));
 }
 
-uint32_t OLED::tick_lvgl_ms() {
+uint32_t LCD_ST7789::tick_lvgl_ms() {
     return static_cast<uint32_t>(esp_timer_get_time() / 1000ULL);
 }
 
-lv_obj_t *OLED::criar_card(lv_obj_t *pai, int x, int y, int w, int h) {
+lv_obj_t *LCD_ST7789::criar_card(lv_obj_t *pai, int x, int y, int w, int h) {
     lv_obj_t *card = lv_obj_create(pai);
     lv_obj_set_pos(card, x, y);
     lv_obj_set_size(card, w, h);
@@ -277,7 +283,7 @@ lv_obj_t *OLED::criar_card(lv_obj_t *pai, int x, int y, int w, int h) {
     return card;
 }
 
-void OLED::criar_marcador_ideal(lv_obj_t *pai, int offset_x) {
+void LCD_ST7789::criar_marcador_ideal(lv_obj_t *pai, int offset_x) {
     lv_obj_t *marca = lv_obj_create(pai);
     lv_obj_set_size(marca, 2, 20);
     lv_obj_set_style_bg_color(marca, lv_color_hex(0xFAFCFF), 0);
@@ -288,7 +294,7 @@ void OLED::criar_marcador_ideal(lv_obj_t *pai, int offset_x) {
     lv_obj_align(marca, LV_ALIGN_BOTTOM_LEFT, offset_x, -12);
 }
 
-lv_color_t OLED::cor_por_temperatura(float temp_c) {
+lv_color_t LCD_ST7789::cor_por_temperatura(float temp_c) {
     if (temp_c <= 35.0F) return lv_color_hex(0x38D7EB); // Ciano
     if (temp_c <= 46.0F) return lv_color_hex(0xFACC34); // Amarelo
     return lv_color_hex(0xF97316);                   // Laranja

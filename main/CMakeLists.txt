@@ -2,7 +2,7 @@ idf_component_register(
     SRCS
         "main.cpp"
         
-        "oled.cpp"
+        "lcd_st7789.cpp"
         "smp_3011.cpp"
     
     INCLUDE_DIRS

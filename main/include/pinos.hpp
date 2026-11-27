@@ -1,6 +1,6 @@
 #pragma once
 
-#include "driver/gpio.h"
+#include "soc/gpio_num.h"
 
 // SMP 3011:
 // Amarelo:	SDA
