@@ -56,7 +56,7 @@ private:
     lv_obj_t *card_status_ = nullptr;
     lv_obj_t *lbl_status_ = nullptr;
     lv_obj_t *lbl_temp_int_ = nullptr;
-    lv_obj_t *lbl_temp_ext_ = nullptr;
+   // lv_obj_t *lbl_temp_ext_ = nullptr;
 
     ModoRegional modo_atual_ = ModoRegional::LATAM;
     float pressao_ = 32.0F;

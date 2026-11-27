@@ -153,31 +153,29 @@ void LCD_ST7789::montar_interface() {
     lv_obj_set_style_text_color(lbl_escala_max_, lv_color_hex(0x697891), 0);
     lv_obj_align(lbl_escala_max_, LV_ALIGN_BOTTOM_RIGHT, -2, 2);
 
+
+//#######################################################################
     // Coluna Direita: Status, Int, Ext
-    card_status_ = criar_card(tela, 204, 8, 108, 42);
+//########################################################################
+    //caixa de status
+    card_status_ = criar_card(tela, 204, 8, 108, 70);
     lbl_status_ = lv_label_create(card_status_);
-    lv_obj_set_style_text_font(lbl_status_, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_font(lbl_status_, &lv_font_montserrat_30, 0);
     lv_obj_center(lbl_status_);
 
-    lv_obj_t *card_int = criar_card(tela, 204, 56, 108, 50);
+//texto dentro do card de temperatura
+    lv_obj_t *card_int = criar_card(tela, 204, 94, 108, 68);
     lv_obj_t *tit_int = lv_label_create(card_int);
-    lv_label_set_text(tit_int, "INT");
+    lv_label_set_text(tit_int, "TEMP");
     lv_obj_set_style_text_color(tit_int, lv_color_hex(0x96A5BE), 0);
     lv_obj_align(tit_int, LV_ALIGN_TOP_LEFT, 2, -2);
 
+//temperatura numero
     lbl_temp_int_ = lv_label_create(card_int);
-    lv_obj_set_style_text_font(lbl_temp_int_, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_font(lbl_temp_int_, &lv_font_montserrat_30, 0);
     lv_obj_align(lbl_temp_int_, LV_ALIGN_BOTTOM_MID, 0, 2);
 
-    lv_obj_t *card_ext = criar_card(tela, 204, 112, 108, 50);
-    lv_obj_t *tit_ext = lv_label_create(card_ext);
-    lv_label_set_text(tit_ext, "EXT");
-    lv_obj_set_style_text_color(tit_ext, lv_color_hex(0x96A5BE), 0);
-    lv_obj_align(tit_ext, LV_ALIGN_TOP_LEFT, 2, -2);
-
-    lbl_temp_ext_ = lv_label_create(card_ext);
-    lv_obj_set_style_text_font(lbl_temp_ext_, &lv_font_montserrat_20, 0);
-    lv_obj_align(lbl_temp_ext_, LV_ALIGN_BOTTOM_MID, 0, 2);
+    
 
     interface_montada_ = true;
     atualizar_painel();
@@ -240,7 +238,7 @@ void LCD_ST7789::atualizar_painel() {
         lv_bar_set_value(barra_pressao_, valor_barra, LV_ANIM_ON);
 
         lv_label_set_text_fmt(lbl_temp_int_, "%d°C", t_int_c);
-        lv_label_set_text_fmt(lbl_temp_ext_, "%d°C", t_ext_c);
+       // lv_label_set_text_fmt(lbl_temp_ext_, "%d°C", t_ext_c);
 
     } else if (modo_atual_ == ModoRegional::EUA) {
         lv_label_set_text(lbl_modo_, "USA");
@@ -254,7 +252,7 @@ void LCD_ST7789::atualizar_painel() {
         lv_bar_set_value(barra_pressao_, valor_barra, LV_ANIM_ON);
 
         lv_label_set_text_fmt(lbl_temp_int_, "%d°F", t_int_f);
-        lv_label_set_text_fmt(lbl_temp_ext_, "%d°F", t_ext_f);
+        //lv_label_set_text_fmt(lbl_temp_ext_, "%d°F", t_ext_f);
 
     } else { // MODO_EURO
         lv_label_set_text(lbl_modo_, "EURO");
@@ -268,12 +266,12 @@ void LCD_ST7789::atualizar_painel() {
         lv_bar_set_value(barra_pressao_, valor_barra, LV_ANIM_ON);
 
         lv_label_set_text_fmt(lbl_temp_int_, "%d°C", t_int_c);
-        lv_label_set_text_fmt(lbl_temp_ext_, "%d°C", t_ext_c);
+        //lv_label_set_text_fmt(lbl_temp_ext_, "%d°C", t_ext_c);
     }
 
     // 3. Aplica cores das temperaturas
     lv_obj_set_style_text_color(lbl_temp_int_, cor_por_temperatura(temp_int_), 0);
-    lv_obj_set_style_text_color(lbl_temp_ext_, cor_por_temperatura(temp_ext_), 0);
+    //lv_obj_set_style_text_color(lbl_temp_ext_, cor_por_temperatura(temp_ext_), 0);
 }
 
 bool LCD_ST7789::notificar_lvgl_pronto(esp_lcd_panel_io_handle_t io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx) {
