@@ -21,6 +21,16 @@
 #include <cstdio>
 
 LCD_ST7789::LCD_ST7789() {
+    constexpr gpio_config_t backlight_config{
+        .pin_bit_mask = 1ULL << PIN_LCD_BACKLIGHT,
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
+    };
+    ESP_ERROR_CHECK(gpio_config(&backlight_config));
+    ESP_ERROR_CHECK(gpio_set_level(PIN_LCD_BACKLIGHT, 0));
+
     constexpr spi_bus_config_t buscfg{
         .mosi_io_num = PIN_LCD_MOSI,
         .miso_io_num = -1,
@@ -77,6 +87,7 @@ LCD_ST7789::LCD_ST7789() {
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle_, true, false));
     ESP_ERROR_CHECK(esp_lcd_panel_set_gap(panel_handle_, 0, 35));
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle_, true));
+    ESP_ERROR_CHECK(gpio_set_level(PIN_LCD_BACKLIGHT, 1));
 
     //LVGL configuracoes
     lv_init();
@@ -185,14 +196,18 @@ void LCD_ST7789::alternar_modo() {
     modo_atual_ = static_cast<ModoRegional>((static_cast<int>(modo_atual_) + 1) % 3);
 }
 
+void LCD_ST7789::desligar() {
+    ESP_ERROR_CHECK(gpio_set_level(PIN_LCD_BACKLIGHT, 0));
+    ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle_, false));
+}
+
 void LCD_ST7789::definir_modo(ModoRegional modo) {
     modo_atual_ = modo;
 }
 
-void LCD_ST7789::definir_leituras(float pressao_psi, float temperatura_interna_c, float temperatura_externa_c) {
+void LCD_ST7789::definir_leituras(float pressao_psi, float temperatura_interna_c) {
     pressao_ = pressao_psi;
     temp_int_ = temperatura_interna_c;
-    temp_ext_ = temperatura_externa_c;
 }
 
 void LCD_ST7789::atualizar_painel() {

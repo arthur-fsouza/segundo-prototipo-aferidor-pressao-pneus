@@ -20,3 +20,4 @@ constexpr gpio_num_t PIN_DC = GPIO_NUM_2;
 constexpr gpio_num_t PIN_CS = GPIO_NUM_5;
 
 constexpr gpio_num_t PIN_BTN_LOCAL = GPIO_NUM_12;
+constexpr gpio_num_t PIN_BTN_ON_OFF = GPIO_NUM_13;

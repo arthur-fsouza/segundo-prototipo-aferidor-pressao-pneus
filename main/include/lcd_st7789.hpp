@@ -25,8 +25,9 @@ public:
 
     void montar_interface();
     void alternar_modo();
+    void desligar();
     void definir_modo(ModoRegional modo);
-    void definir_leituras(float pressao_psi, float temperatura_interna_c, float temperatura_externa_c);
+    void definir_leituras(float pressao_psi, float temperatura_interna_c);
     void atualizar_painel();
 
 private:
@@ -57,11 +58,11 @@ private:
     lv_obj_t *card_status_ = nullptr;
     lv_obj_t *lbl_status_ = nullptr;
     lv_obj_t *lbl_temp_int_ = nullptr;
-   // lv_obj_t *lbl_temp_ext_ = nullptr;
 
     ModoRegional modo_atual_ = ModoRegional::LATAM;
+
     float pressao_ = 32.0F;
     float temp_int_ = 30.0F;
-    float temp_ext_ = 25.0F;
+    
     bool interface_montada_ = false;
 };
