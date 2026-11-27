@@ -26,36 +26,46 @@ Utilizamos um LCD tipo ST7789 de 320x170 que utiliza comunicação SPI. Nele, mo
 Caso se queira utilizar outro tipo de display, será necessário a utilização de outra biblioteca, já que a que utilizamos (`lcd_st7789.hpp`) é apenas para esse LCD específico.
 
 **Botões**
-Os botões servem para mudar o local. Esse local refere-se a quais medidas serão mostradas:
+Existem dois botões utilizados.
 
-- Pressão: PSI ou Bar
-- Temperatura: Celsius ou Fahrenheit
+O de local é utilizado para alternar entre as 3 possíveis configurações de local, definindo quais unidades serão mostradas. Esses modos são:
+- **LATAM:** Pressão PSI e temperatura Celsius
+- **EUA:** Pressão Bar e temperatura Fahrenheit
+- **EURO:** Pressão Bar e temperatura Celsius
+
+O de ON-OFF é utilizado para ligar e desligar o dispositivo.
 
 **Carcaça**
 Temos apenas o protótipo para o encapsulamento dos dispositivos. Porém, ele conta com uma abertura para ver o LCD, aberturas para os botões e um cano que o usuário conecta no bico do pneu.
 
 ### Software
 
-O software é feito em C++ utilizando do ESP-IDF v6.0.1.
+O software é feito em C++ utilizando do ESP-IDF v6.1.1.
 Fomos recomendados a usar uma versão anterior do ESP-IDF, porém decidimos utilizar a mais recente por conta da praticidade para se instalar na máquina dos integrantes.
 
 Utilizamos o **LVGL** como componente externo. Essa biblioteca é responsável pela parte visual, gerindo a interface do usuário no LCD.
 
+Sobre o desligamento e ligamento, o sistema faz uso da funcionalidade de *deep sleep* do ESP. Não só isso, mas o backlight do LCD também é desligado. Dessa forma consume menos energia.
+
 ## Compilação e Execução
 
-Para compilar o projeto, é necessário utilizar o **ESP-IDF** e suas devidas dependências. Recomendamos a versão `6.0.1` em que foi feita o projeto.
-*Outras versões podem ou não funcionar, porém não temos como afirmar com certeza, já que apenas testamos esta.*
+Para compilar o projeto, é necessário utilizar o **ESP-IDF** e suas devidas dependências. Recomendamos a versão `6.1.1` em que foi feita o projeto.
+*Testamos na versão 6.0.1, porém não funcionou. Por conta disso, não recomendados tentar compilar com versões anteriores.*
 É apenas necessário conectar seu ESP32 ao computador/máquina com ESP-IDF e fazer a build e flash do programa.
 
 Para montagem, utilizamos um **ESP32**. Utilizamos um ESP32 comum (no ESP-IDF, nomeado como apenas `esp32`).
 *Não podemos afirmar que outras arquiteturas funcionam, já que testamos apenas com esta.*
 
 Os pinos utilizados são:
-- **23**: SDA
-- **18**: SCL
+- **21**: SDA
+- **22**: SCL
+- **23**: Backlight LCD
+- **19**: MOSI
+- **18**: SCLK
 - **4**: RES
 - **2**: DC
 - **5**: CS
-- **12, 13, 14**: Botões de local, LATAM, EUA e EURO, respectivamente
+- **12**: Botão de local
+- **13**: Botões de ON/OFF
 
 Caso o usuário deseje mudar quais pinos serão utilizados, é necessário modificar o arquivo `main/pinos.hpp`.

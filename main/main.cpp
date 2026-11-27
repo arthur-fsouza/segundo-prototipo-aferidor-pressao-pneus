@@ -96,12 +96,13 @@ extern "C" void app_main() {
     inicializar_botoes();
     btn_on_off_last = !gpio_get_level(PIN_BTN_ON_OFF);
 
+    //=== Tarefas Assíncronas do FreeRTOS ===//
     fila_leituras = xQueueCreate(1, sizeof(LeituraSensor));
     ESP_ERROR_CHECK(fila_leituras == nullptr ? ESP_ERR_NO_MEM : ESP_OK);
     if (xTaskCreate(tarefa_leitura_sensor, "leitura_sensor", 4096, &smp_3011, 1, nullptr) != pdPASS)
         ESP_ERROR_CHECK(ESP_ERR_NO_MEM);
 
-    LeituraSensor leitura_atual{32.0F, 30.0F};
+    LeituraSensor leitura_atual{0.0F, 0.0F};
 
     //=== Loop ===//
     while (true) {
@@ -134,6 +135,7 @@ extern "C" void app_main() {
         btn_local_last = btn_local_cur;
         btn_on_off_last = btn_on_off_cur;
 
+        // Display
         display.definir_leituras(leitura_atual.pressao_psi, leitura_atual.temperatura_c);
         display.atualizar_painel();
 
