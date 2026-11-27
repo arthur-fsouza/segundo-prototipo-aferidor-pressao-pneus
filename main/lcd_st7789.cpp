@@ -239,9 +239,7 @@ void LCD_ST7789::atualizar_painel() {
     const float bar_val = pressao_ / 14.5038F;
     const int psi_int = static_cast<int>(std::lround(pressao_));
     const int t_int_c = static_cast<int>(std::lround(temp_int_));
-    const int t_ext_c = static_cast<int>(std::lround(temp_ext_));
     const int t_int_f = static_cast<int>(std::lround((temp_int_ * 9.0F / 5.0F) + 32.0F));
-    const int t_ext_f = static_cast<int>(std::lround((temp_ext_ * 9.0F / 5.0F) + 32.0F));
     char buf_pressao[16];
     const int valor_barra = std::clamp(static_cast<int>(std::lround(pressao_ * 10.0F)), 0, 500);
 
@@ -257,7 +255,6 @@ void LCD_ST7789::atualizar_painel() {
         lv_bar_set_value(barra_pressao_, valor_barra, LV_ANIM_ON);
 
         lv_label_set_text_fmt(lbl_temp_int_, "%d°C", t_int_c);
-       // lv_label_set_text_fmt(lbl_temp_ext_, "%d°C", t_ext_c);
 
     } else if (modo_atual_ == ModoRegional::EUA) {
         lv_label_set_text(lbl_modo_, "USA");
@@ -271,7 +268,6 @@ void LCD_ST7789::atualizar_painel() {
         lv_bar_set_value(barra_pressao_, valor_barra, LV_ANIM_ON);
 
         lv_label_set_text_fmt(lbl_temp_int_, "%d°F", t_int_f);
-        //lv_label_set_text_fmt(lbl_temp_ext_, "%d°F", t_ext_f);
 
     } else { // MODO_EURO
         lv_label_set_text(lbl_modo_, "EURO");
@@ -285,12 +281,10 @@ void LCD_ST7789::atualizar_painel() {
         lv_bar_set_value(barra_pressao_, valor_barra, LV_ANIM_ON);
 
         lv_label_set_text_fmt(lbl_temp_int_, "%d°C", t_int_c);
-        //lv_label_set_text_fmt(lbl_temp_ext_, "%d°C", t_ext_c);
     }
 
     // 3. Aplica cores das temperaturas
     lv_obj_set_style_text_color(lbl_temp_int_, cor_por_temperatura(temp_int_), 0);
-    //lv_obj_set_style_text_color(lbl_temp_ext_, cor_por_temperatura(temp_ext_), 0);
 }
 
 bool LCD_ST7789::notificar_lvgl_pronto(esp_lcd_panel_io_handle_t io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx) {
