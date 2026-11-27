@@ -21,16 +21,6 @@
 #include <cstdio>
 
 LCD_ST7789::LCD_ST7789() {
-    constexpr gpio_config_t backlight_config{
-        .pin_bit_mask = 1ULL << PIN_LCD_BACKLIGHT,
-        .mode = GPIO_MODE_OUTPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE,
-    };
-    ESP_ERROR_CHECK(gpio_config(&backlight_config));
-    ESP_ERROR_CHECK(gpio_set_level(PIN_LCD_BACKLIGHT, 1));
-
     constexpr spi_bus_config_t buscfg{
         .mosi_io_num = PIN_LCD_MOSI,
         .miso_io_num = -1,
@@ -43,11 +33,13 @@ LCD_ST7789::LCD_ST7789() {
         .data7_io_num = -1,
         .data_io_default_level = false,
         .max_transfer_sz = WIDTH * 40 * sizeof(uint16_t),
+        .dma_burst_size = 0,
         .flags = SPICOMMON_BUSFLAG_MASTER |
                  SPICOMMON_BUSFLAG_MOSI |
                  SPICOMMON_BUSFLAG_SCLK,
         .isr_cpu_id = ESP_INTR_CPU_AFFINITY_AUTO,
         .intr_flags = 0,
+        
     };
     ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
 

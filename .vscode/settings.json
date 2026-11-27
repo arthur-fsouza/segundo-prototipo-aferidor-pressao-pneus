@@ -22,7 +22,7 @@
   "idf.openOcdConfigs": [
     "board/esp32-wrover-kit-3.3v.cfg"
   ],
-  "idf.port": "detect",
+  "idf.port": "COM6",
   "idf.currentSetup": "/home/thurzin/.espressif/v6.0.1/esp-idf",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32"
@@ -32,5 +32,6 @@
     "--background-index",
     "--query-driver=**",
     "--compile-commands-dir=/home/thurzin/src/faculdade/PI_III_RevisadoOLEDDiferente/build"
-  ]
+  ],
+  "idf.flashType": "UART"
 }
