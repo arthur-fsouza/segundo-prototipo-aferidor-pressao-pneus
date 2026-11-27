@@ -18,9 +18,10 @@
 static const char* TAG = "projeto";
 
 // Botões
+static bool last_btn = false;
 static void inicializar_botoes() {
     constexpr gpio_config_t btn_cfg{
-        .pin_bit_mask = (1ULL << PIN_BTN_LATAM) | (1ULL << PIN_BTN_EUA) | (1ULL << PIN_BTN_EURO),
+        .pin_bit_mask = (1ULL << PIN_BTN_LOCAL),
         .mode = GPIO_MODE_INPUT,
         .pull_up_en = GPIO_PULLUP_ENABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
@@ -73,12 +74,11 @@ extern "C" void app_main() {
         float smp_pressure = SMP_3011::convert_pressure(smp_reading.pressure);
         display.definir_leituras(smp_pressure, smp_temp, 25.0F);
 
-        if (gpio_get_level(PIN_BTN_LATAM) == 0)
-            display.definir_modo(LCD_ST7789::ModoRegional::LATAM);
-        else if (gpio_get_level(PIN_BTN_EUA) == 0)
-            display.definir_modo(LCD_ST7789::ModoRegional::EUA);
-        else if (gpio_get_level(PIN_BTN_EURO) == 0)
-            display.definir_modo(LCD_ST7789::ModoRegional::EURO);
+        const bool cur_btn = gpio_get_level(PIN_BTN_LOCAL);
+        if (cur_btn == 0 && !last_btn)
+            display.alternar_modo();
+        last_btn = cur_btn;
+
 
         display.atualizar_painel();
 

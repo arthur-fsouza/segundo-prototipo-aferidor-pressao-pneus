@@ -181,6 +181,10 @@ void LCD_ST7789::montar_interface() {
     atualizar_painel();
 }
 
+void LCD_ST7789::alternar_modo() {
+    modo_atual_ = static_cast<ModoRegional>((static_cast<int>(modo_atual_) + 1) % 3);
+}
+
 void LCD_ST7789::definir_modo(ModoRegional modo) {
     modo_atual_ = modo;
 }

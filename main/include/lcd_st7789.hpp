@@ -24,6 +24,7 @@ public:
     LCD_ST7789();
 
     void montar_interface();
+    void alternar_modo();
     void definir_modo(ModoRegional modo);
     void definir_leituras(float pressao_psi, float temperatura_interna_c, float temperatura_externa_c);
     void atualizar_painel();
