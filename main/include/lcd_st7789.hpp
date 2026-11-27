@@ -31,7 +31,7 @@ public:
 private:
     // Callbacks
     static bool notificar_lvgl_pronto(esp_lcd_panel_io_handle_t io, esp_lcd_panel_io_event_data_t *edata,
-                               void *user_ctx);
+                                      void *user_ctx);
     static void enviar_pixels_lvgl(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map);
     static uint32_t tick_lvgl_ms();
 

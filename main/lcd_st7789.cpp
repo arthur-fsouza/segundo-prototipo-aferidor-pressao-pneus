@@ -9,40 +9,62 @@
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_panel_st7789.h"
 
+#include "hal/lcd_types.h"
+
 #include "lvgl.h"
 
 #include "pinos.hpp"
-#include "esp_lcd_panel_io.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 
 LCD_ST7789::LCD_ST7789() {
-    spi_bus_config_t buscfg = {};
-    buscfg.sclk_io_num = PIN_SCL;
-    buscfg.mosi_io_num = PIN_SDA;
-    buscfg.miso_io_num = -1;
-    buscfg.quadwp_io_num = -1;
-    buscfg.quadhd_io_num = -1;
-    buscfg.max_transfer_sz = WIDTH * 40 * sizeof(uint16_t);
+    constexpr spi_bus_config_t buscfg{
+        .mosi_io_num = PIN_SDA,
+        .miso_io_num = -1,
+        .sclk_io_num = PIN_SCL,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .data4_io_num = -1,
+        .data5_io_num = -1,
+        .data6_io_num = -1,
+        .data7_io_num = -1,
+        .data_io_default_level = false,
+        .max_transfer_sz = WIDTH * 40 * sizeof(uint16_t),
+        .flags = SPICOMMON_BUSFLAG_MASTER |
+                SPICOMMON_BUSFLAG_MOSI |
+                SPICOMMON_BUSFLAG_SCLK,
+        .isr_cpu_id = ESP_INTR_CPU_AFFINITY_AUTO,
+        .intr_flags = 0,
+    };
     ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
 
     esp_lcd_panel_io_handle_t io_handle = nullptr;
-    esp_lcd_panel_io_spi_config_t io_config = {};
-    io_config.dc_gpio_num = PIN_DC;
-    io_config.cs_gpio_num = PIN_CS;
-    io_config.pclk_hz = 20 * 1000 * 1000;
-    io_config.lcd_cmd_bits = 8;
-    io_config.lcd_param_bits = 8;
-    io_config.spi_mode = 0;
-    io_config.trans_queue_depth = 10;
+    esp_lcd_panel_io_spi_config_t io_config{
+        .cs_gpio_num = PIN_CS,
+        .dc_gpio_num = PIN_DC,
+        .spi_mode = 0,
+        .pclk_hz = 20 * 1000 * 1000,
+        .trans_queue_depth = 10,
+        .on_color_trans_done = nullptr,
+        .user_ctx = nullptr,
+        .lcd_cmd_bits = 8,
+        .lcd_param_bits = 8,
+        .cs_ena_pretrans = 0,
+        .cs_ena_posttrans = 0,
+        .flags{}
+    };
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi(SPI2_HOST, &io_config, &io_handle));
 
-    esp_lcd_panel_dev_config_t panel_config = {};
-    panel_config.reset_gpio_num = PIN_RES;
-    panel_config.rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB;
-    panel_config.bits_per_pixel = 16;
+    constexpr esp_lcd_panel_dev_config_t panel_config{
+        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
+        .data_endian = LCD_RGB_DATA_ENDIAN_BIG,
+        .bits_per_pixel = 16,
+        .reset_gpio_num = PIN_RES,
+        .vendor_config = nullptr,
+        .flags{}
+    };
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_config, &panel_handle_));
 
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle_));
@@ -169,9 +191,8 @@ void LCD_ST7789::definir_leituras(float pressao_psi, float temperatura_interna_c
 }
 
 void LCD_ST7789::atualizar_painel() {
-    if (!interface_montada_) {
+    if (!interface_montada_)
         return;
-    }
 
     const bool em_ingles = modo_atual_ == ModoRegional::EUA || modo_atual_ == ModoRegional::EURO;
 
